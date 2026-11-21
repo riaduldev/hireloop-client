@@ -42,7 +42,7 @@ function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     setLoading(true)
     
     try {
-      const {error } = await signUp.email({
+      const {error} = await signUp.email({
         name: formData.name.trim(),
         email: formData.email.trim(),
         password: formData.password,
@@ -61,7 +61,7 @@ function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     } finally {
       setLoading(false)
     }
-
+//  console.log(formData);
   }
 
   function handleGoogle() {

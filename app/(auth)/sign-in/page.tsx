@@ -2,31 +2,70 @@
 
 import Link from "next/link"
 import { useState } from "react"
+import type { ChangeEvent, FormEvent } from "react"
+import { useRouter } from "next/navigation"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { signIn } from "@/lib/auth-client"
 import { GoogleIcon } from "@/components/icons/google"
 
 export default function SignInPage() {
+  const router = useRouter()
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   })
 
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+  const [errorMsg, setErrorMsg] = useState("")
+  const [loading, setLoading] = useState(false)
+
+  function handleChange(e: ChangeEvent<HTMLInputElement>) {
     const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }))
+
+    if (errorMsg) {
+      setErrorMsg("")
+    }
   }
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    console.log("Sign in data:", formData)
+    setErrorMsg("")
+    setLoading(true)
+
+    try {
+      const { error } = await signIn.email({
+        email: formData.email.trim(),
+        password: formData.password,
+        callbackURL: "/",
+      })
+
+      if (error) {
+        setErrorMsg(error.message || "Could not sign in. Please try again.")
+        return
+      }
+
+      router.push("/")
+      router.refresh()
+    } catch {
+      setErrorMsg("Something went wrong. Please try again.")
+    } finally {
+      setLoading(false)
+    }
   }
 
-  function handleGoogle() {
-    console.log("Google sign in clicked")
+  async function handleGoogle() {
+    await signIn.social({
+      provider: "google",
+      callbackURL: "/",
+    })
   }
-
   return (
     <main className="flex min-h-[calc(100vh-80px)] items-center justify-center bg-[#05050a] px-4 py-16">
       <div className="w-full max-w-md rounded-2xl border border-white/10 bg-[#141418] p-8 shadow-xl">
@@ -34,6 +73,7 @@ export default function SignInPage() {
           <h1 className="font-[family-name:var(--font-manrope)] text-3xl font-bold text-white">
             Welcome back
           </h1>
+
           <p className="mt-2 text-sm text-white/60">
             Sign in to your HireLoop account
           </p>
@@ -48,18 +88,21 @@ export default function SignInPage() {
           <GoogleIcon />
           Sign in with Google
         </Button>
-
-        <div className="mb-6 flex items-center gap-3">
-          <span className="h-px flex-1 bg-white/10" />
-          <span className="text-xs uppercase text-white/40">or</span>
-          <span className="h-px flex-1 bg-white/10" />
-        </div>
+<div className="mb-6 flex items-center gap-3">
+  <span className="h-px flex-1 bg-white/10" />
+  <span className="text-xs uppercase text-white/40">or</span>
+  <span className="h-px flex-1 bg-white/10" />
+</div>
+        {errorMsg && (
+          <p className="mb-4 text-center text-sm text-red-500">{errorMsg}</p>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div className="space-y-2">
             <label htmlFor="email" className="text-sm text-white/80">
               Email
             </label>
+
             <Input
               id="email"
               name="email"
@@ -76,6 +119,7 @@ export default function SignInPage() {
             <label htmlFor="password" className="text-sm text-white/80">
               Password
             </label>
+
             <Input
               id="password"
               name="password"
@@ -90,9 +134,10 @@ export default function SignInPage() {
 
           <Button
             type="submit"
+            disabled={loading}
             className="h-11 w-full rounded-lg bg-[#5c53fe] text-white hover:bg-[#5c53fe]/90"
           >
-            Sign In
+            {loading ? "Signing in..." : "Sign In"}
           </Button>
         </form>
 
