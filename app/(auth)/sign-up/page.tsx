@@ -5,24 +5,30 @@ import { useState } from "react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { GoogleIcon } from "@/components/icons/google"
-import { signUp } from "@/lib/auth-client"
+import { signIn, signUp } from "@/lib/auth-client"
 import { useRouter } from "next/navigation"
 
 export default function SignUpPage() {
-    const router = useRouter()
+  const router = useRouter()
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
     confirmPassword: "",
   })
-
+  const [role, setRole] = useState<"seeker" | "recruiter">("seeker");
   const [errorMsg, setErrorMsg] = useState("")
   const [loading, setLoading] = useState(false)
 
-
-function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
     if (errorMsg) setErrorMsg("")
@@ -40,20 +46,20 @@ function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
       return
     }
     setLoading(true)
-    
     try {
-      const {error} = await signUp.email({
+      const { error } = await signUp.email({
         name: formData.name.trim(),
         email: formData.email.trim(),
         password: formData.password,
+        role,
         callbackURL: "/",
       })
-
       if (error) {
-        setErrorMsg(error.message || "Could not create account. Please try again.")
+        setErrorMsg(
+          error.message || "Could not create account. Please try again."
+        )
         return
       }
-
       router.push("/")
       router.refresh()
     } catch {
@@ -61,11 +67,14 @@ function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     } finally {
       setLoading(false)
     }
-//  console.log(formData);
+    console.log(formData);
   }
 
-  function handleGoogle() {
-    console.log("Google sign up clicked")
+  async function handleGoogle() {
+    await signIn.social({
+      provider: "google",
+      callbackURL: "/",
+    })
   }
 
   return (
@@ -92,7 +101,7 @@ function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
 
         <div className="mb-6 flex items-center gap-3">
           <span className="h-px flex-1 bg-white/10" />
-          <span className="text-xs uppercase text-white/40">or</span>
+          <span className="text-xs text-white/40 uppercase">or</span>
           <span className="h-px flex-1 bg-white/10" />
         </div>
 
@@ -130,6 +139,22 @@ function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
           </div>
 
           <div className="space-y-2">
+            <label htmlFor="role" className="text-sm text-white/80">
+              Role
+            </label>
+            <Select value={role} onValueChange={(v) => v && setRole(v)}>
+              <SelectTrigger className="h-11 w-full border-white/10 bg-[#0a0a0f] text-white">
+                <SelectValue placeholder="Select role" />
+              </SelectTrigger>
+              <SelectContent className="border-white/10 bg-[#141418] text-white">
+                <SelectItem value="seeker">Seeker</SelectItem>
+                <SelectItem value="recruiter">Recruiter</SelectItem>
+                <SelectItem value="admin">Admin</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
             <label htmlFor="password" className="text-sm text-white/80">
               Password
             </label>
@@ -161,11 +186,14 @@ function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
             />
           </div>
 
+          {errorMsg ? <p className="text-sm text-red-400">{errorMsg}</p> : null}
+
           <Button
             type="submit"
+            disabled={loading}
             className="h-11 w-full rounded-lg bg-[#5c53fe] text-white hover:bg-[#5c53fe]/90"
           >
-            Sign Up
+            {loading ? "Creating account..." : "Sign Up"}
           </Button>
         </form>
 

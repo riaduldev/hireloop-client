@@ -23,15 +23,8 @@ export default function SignInPage() {
 
   function handleChange(e: ChangeEvent<HTMLInputElement>) {
     const { name, value } = e.target
-
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }))
-
-    if (errorMsg) {
-      setErrorMsg("")
-    }
+    setFormData((prev) => ({ ...prev, [name]: value }))
+    if (errorMsg) setErrorMsg("")
   }
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
@@ -66,6 +59,7 @@ export default function SignInPage() {
       callbackURL: "/",
     })
   }
+
   return (
     <main className="flex min-h-[calc(100vh-80px)] items-center justify-center bg-[#05050a] px-4 py-16">
       <div className="w-full max-w-md rounded-2xl border border-white/10 bg-[#141418] p-8 shadow-xl">
@@ -73,7 +67,6 @@ export default function SignInPage() {
           <h1 className="font-[family-name:var(--font-manrope)] text-3xl font-bold text-white">
             Welcome back
           </h1>
-
           <p className="mt-2 text-sm text-white/60">
             Sign in to your HireLoop account
           </p>
@@ -88,11 +81,13 @@ export default function SignInPage() {
           <GoogleIcon />
           Sign in with Google
         </Button>
-<div className="mb-6 flex items-center gap-3">
-  <span className="h-px flex-1 bg-white/10" />
-  <span className="text-xs uppercase text-white/40">or</span>
-  <span className="h-px flex-1 bg-white/10" />
-</div>
+
+        <div className="mb-6 flex items-center gap-3">
+          <span className="h-px flex-1 bg-white/10" />
+          <span className="text-xs uppercase text-white/40">or</span>
+          <span className="h-px flex-1 bg-white/10" />
+        </div>
+
         {errorMsg && (
           <p className="mb-4 text-center text-sm text-red-500">{errorMsg}</p>
         )}
@@ -102,7 +97,6 @@ export default function SignInPage() {
             <label htmlFor="email" className="text-sm text-white/80">
               Email
             </label>
-
             <Input
               id="email"
               name="email"
@@ -119,7 +113,6 @@ export default function SignInPage() {
             <label htmlFor="password" className="text-sm text-white/80">
               Password
             </label>
-
             <Input
               id="password"
               name="password"
