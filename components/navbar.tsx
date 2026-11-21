@@ -66,7 +66,7 @@ export function Navbar() {
             </Button>
             <Button
             nativeButton={false}
-              render={<Link href="/get-started" />}
+              render={<Link href="/sign-up" />}
               className="h-[52px] rounded-lg bg-[#5c53fe] px-6 text-[#ededef] hover:bg-[#5c53fe]/90"
             >
               Get Started
@@ -111,7 +111,7 @@ export function Navbar() {
                 </Button>
                 <Button
                 nativeButton={false}
-                  render={<Link href="/get-started" />}
+                  render={<Link href="/sign-up" />}
                   className="h-[52px] rounded-lg bg-[#5c53fe] text-[#ededef] hover:bg-[#5c53fe]/90"
                 >
                   Get Started
