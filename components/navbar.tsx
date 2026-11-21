@@ -58,12 +58,14 @@ export function Navbar() {
           <Separator orientation="vertical" className="h-6 bg-white/10" />
           <div className="flex items-center gap-3">
             <Button
+            nativeButton={false}
               render={<Link href="/sign-in" />}
               className="h-[38px] rounded-lg bg-white px-4 text-[#645bff] hover:bg-white/90"
             >
               Sign In
             </Button>
             <Button
+            nativeButton={false}
               render={<Link href="/get-started" />}
               className="h-[52px] rounded-lg bg-[#5c53fe] px-6 text-[#ededef] hover:bg-[#5c53fe]/90"
             >
@@ -101,12 +103,14 @@ export function Navbar() {
                 ))}
                 <Separator className="my-3 bg-white/10" />
                 <Button
+                nativeButton={false}
                   render={<Link href="/sign-in" />}
                   className="h-[38px] rounded-lg bg-white text-[#645bff] hover:bg-white/90"
                 >
                   Sign In
                 </Button>
                 <Button
+                nativeButton={false}
                   render={<Link href="/get-started" />}
                   className="h-[52px] rounded-lg bg-[#5c53fe] text-[#ededef] hover:bg-[#5c53fe]/90"
                 >
