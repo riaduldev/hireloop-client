@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState } from "react"
@@ -10,102 +11,125 @@ import { Button } from "@/components/ui/button"
 
 export function Hero() {
   const router = useRouter()
+
   const [keyword, setKeyword] = useState("")
   const [location, setLocation] = useState("")
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+
     const params = new URLSearchParams()
-    if (keyword.trim()) params.set("q", keyword.trim())
-    if (location.trim()) params.set("location", location.trim())
-    router.push(`/jobs?${params.toString()}`)
+
+    if (keyword.trim()) {
+      params.set("q", keyword.trim())
+    }
+
+    if (location.trim()) {
+      params.set("location", location.trim())
+    }
+
+    const queryString = params.toString()
+
+    router.push(queryString ? `/jobs?${queryString}` : "/jobs")
   }
 
+  const trendingPositions = [
+    "Product Designer",
+    "AI Engineering",
+    "Dev-ops Engineer",
+  ]
+
   return (
-    <section className="relative flex min-h-[100svh] w-full items-center justify-center overflow-hidden bg-[#05050a] px-4 py-24 sm:px-6 md:px-10 lg:py-28">
-      {/* Full-width Globe & Starfield Image */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 top-16 mx-auto w-full max-w-[1440px] select-none sm:top-12">
+    <section className="relative flex min-h-[100svh] w-full items-center justify-center overflow-hidden bg-[#05050a] px-4 py-20 sm:px-6 sm:py-24 lg:px-10">
+
+      {/* Background Globe Image */}
+      <div className="pointer-events-none absolute inset-0 select-none">
         <Image
           src="/images/globe.png"
           alt="Global job network"
           fill
           priority
           sizes="100vw"
-          className="object-cover object-[center_85%] sm:object-contain sm:object-bottom"
+          className="object-cover object-center"
         />
-
-        {/* উপরের দিকের কালো ব্যাকগ্রাউন্ডের সাথে সফট ব্লেন্ড */}
-        <div className="absolute inset-x-0 top-0 h-36 bg-gradient-to-b from-[#05050a] via-[#05050a]/60 to-transparent sm:h-44" />
-
-        {/* বাম ও ডান প্রান্তের হার্ড এজ ঢেকে দেওয়ার ফেড */}
-        <div className="pointer-events-none absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-[#05050a] to-transparent sm:w-32" />
-        <div className="pointer-events-none absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-[#05050a] to-transparent sm:w-32" />
-
-        {/* একেবারে নিচের প্রান্তে স্মুথ ডার্ক ফেড */}
-        <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#05050a] to-transparent" />
       </div>
 
-      {/* Responsive Hero Content */}
+      {/* Background Overlay */}
+      <div className="pointer-events-none absolute inset-0 bg-[#05050a]/30" />
+
+      {/* Hero Content */}
       <div className="relative z-10 mx-auto flex w-full max-w-[860px] flex-col items-center text-center">
-        {/* Top Pill Badge */}
+
+        {/* Top Badge */}
         <div className="mb-5 flex items-center justify-center gap-2 sm:mb-7 sm:gap-3">
           <span className="hidden h-px w-8 bg-gradient-to-r from-transparent to-white/25 sm:block md:w-12" />
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-[#121218]/90 px-3.5 py-1.5 shadow-[0_0_25px_rgba(92,83,254,0.15)] backdrop-blur-md sm:px-4 sm:py-2">
-            <Briefcase className="size-3.5 text-[#f59e0b] sm:size-4" />
-            <span className="font-[family-name:var(--font-space-mono)] text-[11px] tracking-wider text-white/90 sm:text-xs md:text-sm">
-              <strong className="font-bold text-white">50,000+</strong> NEW JOBS THIS MONTH
+
+          <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-[#121218]/90 px-3 py-1.5 shadow-[0_0_25px_rgba(92,83,254,0.15)] backdrop-blur-md sm:px-4 sm:py-2">
+            <Briefcase className="size-3.5 shrink-0 text-[#f59e0b] sm:size-4" />
+
+            <span className="font-[family-name:var(--font-space-mono)] text-[10px] tracking-wider text-white/90 sm:text-xs md:text-sm">
+              <strong className="font-bold text-white">
+                50,000+
+              </strong>{" "}
+              NEW JOBS THIS MONTH
             </span>
           </div>
+
           <span className="hidden h-px w-8 bg-gradient-to-l from-transparent to-white/25 sm:block md:w-12" />
         </div>
 
-        {/* Main Headline */}
-        <h1 className="font-[family-name:var(--font-manrope)] text-3xl font-bold leading-[1.15] tracking-[-0.02em] text-white sm:text-5xl md:text-6xl">
+        {/* Headline */}
+        <h1 className="font-[family-name:var(--font-manrope)] text-3xl leading-[1.15] font-bold tracking-tight text-white sm:text-5xl md:text-6xl lg:text-7xl">
           Find Your Dream Job Today
         </h1>
 
-        {/* Subheadline */}
-        <p className="mt-3 max-w-[650px] px-1 font-[family-name:var(--font-manrope)] text-sm leading-relaxed text-white/75 sm:mt-4 sm:text-base md:text-lg">
-          HireLoop connects top talent with world-class companies. Browse
-          thousands of curated opportunities and land your next role — faster.
+        {/* Description */}
+        <p className="mt-4 max-w-[650px] px-1 font-[family-name:var(--font-manrope)] text-sm leading-relaxed text-white/75 sm:text-base md:text-lg">
+          HireLoop connects top talent with world-class companies.
+          Browse thousands of curated opportunities and land your
+          next role — faster.
         </p>
 
-        {/* Search Bar */}
+        {/* Search Form */}
         <form
           onSubmit={handleSearch}
           className="mt-7 flex w-full max-w-[740px] flex-col gap-2 rounded-2xl border border-white/15 bg-[#0f0f14]/90 p-2 shadow-2xl backdrop-blur-md sm:mt-10 sm:flex-row sm:items-center"
         >
-          {/* Keyword Input */}
-          <div className="flex flex-1 items-center gap-2.5 px-3 py-2 sm:py-0">
+          {/* Keyword */}
+          <div className="flex min-w-0 flex-1 items-center gap-2.5 px-3 py-2 sm:py-0">
             <Search className="size-4 shrink-0 text-white/50" />
+
             <input
               type="text"
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
               placeholder="Job title, skill or company"
-              className="min-w-0 w-full bg-transparent font-sans text-sm text-white placeholder:text-white/40 outline-none sm:text-base"
+              aria-label="Search by job title, skill or company"
+              className="w-full min-w-0 bg-transparent font-sans text-sm text-white outline-none placeholder:text-white/40 sm:text-base"
             />
           </div>
 
           {/* Divider */}
-          <span className="h-px w-full bg-white/10 sm:h-6 sm:w-px sm:bg-white/15" />
+          <span className="h-px w-full bg-white/10 sm:h-7 sm:w-px sm:bg-white/15" />
 
-          {/* Location Input */}
-          <div className="flex flex-1 items-center gap-2.5 px-3 py-2 sm:py-0">
+          {/* Location */}
+          <div className="flex min-w-0 flex-1 items-center gap-2.5 px-3 py-2 sm:py-0">
             <MapPin className="size-4 shrink-0 text-white/50" />
+
             <input
               type="text"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
               placeholder="Location or Remote"
-              className="min-w-0 w-full bg-transparent font-sans text-sm text-white placeholder:text-white/40 outline-none sm:text-base"
+              aria-label="Search by location"
+              className="w-full min-w-0 bg-transparent font-sans text-sm text-white outline-none placeholder:text-white/40 sm:text-base"
             />
           </div>
 
-          {/* Submit Button */}
+          {/* Search Button */}
           <Button
             type="submit"
-            className="flex h-11 w-full shrink-0 items-center justify-center rounded-xl bg-[#5c53fe] px-4 text-white transition-all hover:bg-[#4b42f5] sm:h-11 sm:w-11 sm:px-0"
+            className="flex h-11 w-full shrink-0 items-center justify-center rounded-xl bg-[#5c53fe] px-4 text-white transition-colors hover:bg-[#4b42f5] sm:w-11 sm:px-0"
           >
             <Search className="size-5" />
             <span className="ml-2 text-sm font-medium sm:sr-only">
@@ -115,22 +139,21 @@ export function Hero() {
         </form>
 
         {/* Trending Positions */}
-        <div className="mt-5 flex flex-wrap items-center justify-center gap-2.5 sm:mt-6 sm:gap-3">
+        <div className="mt-5 flex w-full flex-wrap items-center justify-center gap-2.5 sm:mt-6 sm:gap-3">
           <span className="w-full font-[family-name:var(--font-manrope)] text-xs text-white/60 sm:w-auto sm:text-sm">
-            Trending Position
+            Trending Positions
           </span>
+
           <div className="flex flex-wrap justify-center gap-2">
-            {["Product Designer", "AI Engineering", "Dev-ops Engineer"].map(
-              (tag) => (
-                <Link
-                  key={tag}
-                  href={`/jobs?q=${encodeURIComponent(tag)}`}
-                  className="rounded-full border border-white/10 bg-[#14141a]/85 px-3 py-1.5 font-[family-name:var(--font-manrope)] text-xs text-white/85 backdrop-blur-sm transition-colors hover:border-white/25 hover:bg-[#1f1f29] hover:text-white"
-                >
-                  {tag}
-                </Link>
-              )
-            )}
+            {trendingPositions.map((tag) => (
+              <Link
+                key={tag}
+                href={`/jobs?q=${encodeURIComponent(tag)}`}
+                className="rounded-full border border-white/10 bg-[#14141a]/85 px-3 py-1.5 font-[family-name:var(--font-manrope)] text-xs text-white/85 backdrop-blur-sm transition-colors hover:border-white/25 hover:bg-[#1f1f29] hover:text-white"
+              >
+                {tag}
+              </Link>
+            ))}
           </div>
         </div>
       </div>
