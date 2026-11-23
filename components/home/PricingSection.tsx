@@ -1,7 +1,6 @@
+"use client"
 
-"use client";
-
-import { useState } from "react";
+import { useState } from "react"
 import {
   Check,
   Crown,
@@ -9,16 +8,11 @@ import {
   Zap,
   ArrowRight,
   Sparkles,
-} from "lucide-react";
+} from "lucide-react"
 
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
 
 const pricingPlans = [
   {
@@ -68,12 +62,12 @@ const pricingPlans = [
     highlighted: false,
     buttonText: "Go Premium",
   },
-];
+]
 
 export default function PricingSection() {
-  const [billingCycle, setBillingCycle] = useState<
-    "monthly" | "yearly"
-  >("monthly");
+  const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">(
+    "monthly"
+  )
 
   return (
     <section
@@ -81,33 +75,30 @@ export default function PricingSection() {
       className="w-full bg-[#050505] px-4 py-16 text-white sm:px-6 sm:py-20 lg:px-10 lg:py-24"
     >
       <div className="mx-auto max-w-[1200px]">
-
         {/* Section Heading */}
         <div className="mx-auto mb-12 max-w-2xl text-center sm:mb-16">
-
           <div className="mb-5 flex items-center justify-center gap-3">
             <span className="h-2 w-2 rounded-full bg-violet-500" />
 
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-400 sm:text-sm">
+            <p className="text-xs font-semibold tracking-[0.2em] text-zinc-400 uppercase sm:text-sm">
               Pricing
             </p>
 
             <span className="h-2 w-2 rounded-full bg-violet-500" />
           </div>
 
-          <h2 className="text-3xl font-semibold leading-tight tracking-tight sm:text-4xl md:text-5xl">
+          <h2 className="text-3xl leading-tight font-semibold tracking-tight sm:text-4xl md:text-5xl">
             Pay for the leverage,
             <br className="hidden sm:block" /> not the listings
           </h2>
 
           <p className="mx-auto mt-5 max-w-lg text-sm leading-7 text-zinc-400 sm:text-base">
-            Choose the perfect plan to unlock smarter job discovery
-            and accelerate your career.
+            Choose the perfect plan to unlock smarter job discovery and
+            accelerate your career.
           </p>
 
           {/* Billing Toggle */}
           <div className="mt-8 inline-flex items-center gap-1 rounded-full border border-zinc-800 bg-[#111111] p-1">
-
             <Button
               type="button"
               variant="ghost"
@@ -134,7 +125,6 @@ export default function PricingSection() {
               }`}
             >
               Yearly
-
               <Badge className="border-0 bg-violet-600 px-2 py-0.5 text-[10px] text-white">
                 -25%
               </Badge>
@@ -144,14 +134,11 @@ export default function PricingSection() {
 
         {/* Pricing Cards */}
         <div className="grid grid-cols-1 items-stretch gap-6 md:grid-cols-2 xl:grid-cols-3">
-
           {pricingPlans.map((plan) => {
-            const Icon = plan.icon;
+            const Icon = plan.icon
 
             const price =
-              billingCycle === "monthly"
-                ? plan.priceMonthly
-                : plan.priceYearly;
+              billingCycle === "monthly" ? plan.priceMonthly : plan.priceYearly
 
             return (
               <Card
@@ -174,7 +161,6 @@ export default function PricingSection() {
 
                 {/* Card Header */}
                 <CardHeader className="p-6 pb-2 sm:p-7">
-
                   <div className="flex items-center gap-3">
                     <div
                       className={`flex h-11 w-11 items-center justify-center rounded-xl border ${
@@ -187,14 +173,10 @@ export default function PricingSection() {
                     </div>
 
                     <div>
-                      <h3 className="text-lg font-semibold">
-                        {plan.name}
-                      </h3>
+                      <h3 className="text-lg font-semibold">{plan.name}</h3>
 
                       <p className="text-xs text-zinc-500">
-                        {plan.highlighted
-                          ? "Best value plan"
-                          : "Flexible plan"}
+                        {plan.highlighted ? "Best value plan" : "Flexible plan"}
                       </p>
                     </div>
                   </div>
@@ -206,9 +188,7 @@ export default function PricingSection() {
                         ${price}
                       </span>
 
-                      <span className="text-sm text-zinc-500">
-                        /month
-                      </span>
+                      <span className="text-sm text-zinc-500">/month</span>
                     </div>
 
                     {billingCycle === "yearly" && price > 0 && (
@@ -218,9 +198,7 @@ export default function PricingSection() {
                     )}
 
                     {price === 0 && (
-                      <p className="mt-2 text-xs text-zinc-500">
-                        Free forever
-                      </p>
+                      <p className="mt-2 text-xs text-zinc-500">Free forever</p>
                     )}
                   </div>
 
@@ -231,10 +209,9 @@ export default function PricingSection() {
 
                 {/* Features */}
                 <CardContent className="flex-grow px-6 py-6 sm:px-7">
-
                   <div className="mb-5 h-px w-full bg-zinc-800" />
 
-                  <p className="mb-5 text-xs font-semibold uppercase tracking-wider text-zinc-500">
+                  <p className="mb-5 text-xs font-semibold tracking-wider text-zinc-500 uppercase">
                     What&apos;s included
                   </p>
 
@@ -259,13 +236,14 @@ export default function PricingSection() {
                 </CardContent>
 
                 {/* Card Footer */}
-                <CardFooter className="p-6 pt-0 sm:p-7 sm:pt-0">
+                <CardFooter className="mt-auto border-t-0 bg-transparent p-6 pt-0 sm:p-7 sm:pt-0">
                   <Button
                     type="button"
-                    className={`group/btn h-12 w-full rounded-xl text-sm font-semibold transition-all duration-300 ${
+                    variant="ghost"
+                    className={`group/btn h-12 w-full rounded-xl border bg-transparent text-sm font-semibold shadow-none transition-all duration-300 ${
                       plan.highlighted
-                        ? "bg-violet-600 text-white hover:bg-violet-500"
-                        : "border border-zinc-800 bg-[#202020] text-white hover:border-zinc-600 hover:bg-zinc-800"
+                        ? "border-violet-500/50 text-violet-300 hover:border-violet-400 hover:bg-violet-500/10 hover:text-white"
+                        : "border-zinc-700 text-white hover:border-violet-500/50 hover:bg-transparent hover:text-violet-300"
                     }`}
                   >
                     {plan.buttonText}
@@ -274,10 +252,10 @@ export default function PricingSection() {
                   </Button>
                 </CardFooter>
               </Card>
-            );
+            )
           })}
         </div>
       </div>
     </section>
-  );
+  )
 }
