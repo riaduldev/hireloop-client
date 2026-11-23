@@ -1,49 +1,50 @@
 
-"use client"
+"use client";
 
-import { useState } from "react"
-import Image from "next/image"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { Briefcase, MapPin, Search } from "lucide-react"
+import { useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Briefcase, MapPin, Search } from "lucide-react";
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
+import JobStats from "./Job-Stats";
 
 export function Hero() {
-  const router = useRouter()
+  const router = useRouter();
 
-  const [keyword, setKeyword] = useState("")
-  const [location, setLocation] = useState("")
+  const [keyword, setKeyword] = useState("");
+  const [location, setLocation] = useState("");
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    const params = new URLSearchParams()
+    const params = new URLSearchParams();
 
     if (keyword.trim()) {
-      params.set("q", keyword.trim())
+      params.set("q", keyword.trim());
     }
 
     if (location.trim()) {
-      params.set("location", location.trim())
+      params.set("location", location.trim());
     }
 
-    const queryString = params.toString()
+    const queryString = params.toString();
 
-    router.push(queryString ? `/jobs?${queryString}` : "/jobs")
-  }
+    router.push(queryString ? `/jobs?${queryString}` : "/jobs");
+  };
 
   const trendingPositions = [
     "Product Designer",
     "AI Engineering",
     "Dev-ops Engineer",
-  ]
+  ];
 
   return (
-    <section className="relative flex min-h-[100svh] w-full items-center justify-center overflow-hidden bg-[#05050a] px-4 py-20 sm:px-6 sm:py-24 lg:px-10">
+    <section className="relative w-full overflow-visible bg-[#05050a]">
 
       {/* Background Globe Image */}
-      <div className="pointer-events-none absolute inset-0 select-none">
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <Image
           src="/images/globe.png"
           alt="Global job network"
@@ -58,7 +59,7 @@ export function Hero() {
       <div className="pointer-events-none absolute inset-0 bg-[#05050a]/30" />
 
       {/* Hero Content */}
-      <div className="relative z-10 mx-auto flex w-full max-w-[860px] flex-col items-center text-center">
+      <div className="relative z-10 mx-auto flex min-h-[85svh] w-full max-w-[1320px] flex-col items-center justify-center px-4 py-24 text-center sm:px-6 sm:py-28 lg:px-10">
 
         {/* Top Badge */}
         <div className="mb-5 flex items-center justify-center gap-2 sm:mb-7 sm:gap-3">
@@ -157,6 +158,12 @@ export function Hero() {
           </div>
         </div>
       </div>
+
+      {/* Job Stats */}
+      <div className="relative z-20 mx-auto -mt-10 w-full max-w-[1320px] px-4 pb-8 sm:-mt-14 sm:px-6 lg:px-10">
+        <JobStats />
+      </div>
+
     </section>
-  )
+  );
 }
