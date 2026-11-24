@@ -23,7 +23,7 @@ This is a Next.js 16+ app (app router) with better-auth, Tailwind CSS v4, and sh
 ## Key conventions
 
 - **Auth**: `authClient` from `lib/auth-client` provides `signIn`, `signUp`, `useSession`, `signOut`. Uses better-auth with MongoDB adapter + Google OAuth. Protected routes check `session?.user`.
-- **Tailwind CSS v4**: `@import "tailwindcss"` in `app/globals.css`. Config in `package.json` devDependencies. `cn` utility from `class-variance-authority` for class merging.
+- **Tailwind CSS v4**: `@import "tailwindcss"` in `app/globals.css`. Config in `package.json` devDependencies. `cn` utility from `cn` package for class merging.
 - **Fonts**: Google Fonts via `next/font` (Geist, Manrope, Space_Mono). Font classes applied in `app/layout.tsx`.
 - **Theme**: `ThemeProvider` in `components/theme-provider` enables system theme + ⌘D hotkey to toggle.
 - **API routes**: under `app/api/` — authenticated routes use `better-auth` middleware/context.
@@ -42,4 +42,4 @@ This is a Next.js 16+ app (app router) with better-auth, Tailwind CSS v4, and sh
 - `NEXT_PUBLIC_BETTER_AUTH_URL` must match the running server URL (default `http://localhost:3000`)
 - Google OAuth requires `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in `.env`
 - Tailwind CSS v4 uses `@import` style — do not use legacy `tailwind.config.js` patterns
-- `cn()` merges Tailwind classes; always use it for variant/size classes (see `components/ui/button.tsx`)
+- `cn()` merges Tailwind classes (from `cn` package); always use it for variant/size classes

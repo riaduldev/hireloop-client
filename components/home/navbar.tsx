@@ -1,4 +1,3 @@
-
 "use client"
 
 import Link from "next/link"
@@ -53,16 +52,15 @@ export function Navbar() {
   }
 
   return (
-    <header className="sticky bg-black top-0 z-50 w-full px-3 pt-3 sm:px-6 sm:pt-4 lg:px-10 xl:px-20">
+    <header className="sticky top-0 z-50 w-full bg-black px-3 pt-3 sm:px-6 sm:pt-4 lg:px-10 xl:px-20">
       <div className="mx-auto flex w-full max-w-[1280px] min-w-0 items-center justify-between gap-3 rounded-[14px] border border-white/7 bg-[#141418] px-3 py-3 sm:px-5 lg:px-6">
-
         {/* Logo */}
         <Link href="/" className="shrink-0">
           <Image
             src="/images/logo.png"
             alt="HireLoop"
-            width={154}
-            height={44}
+            width={160}
+            height={40}
             priority
             className="h-8 w-auto sm:h-10"
           />
@@ -76,7 +74,7 @@ export function Navbar() {
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "whitespace-nowrap text-sm text-[#ededef] transition-colors hover:text-white xl:text-base",
+                  "text-sm whitespace-nowrap text-[#ededef] transition-colors hover:text-white xl:text-base",
                   link.active(pathname) &&
                     "font-bold underline underline-offset-4"
                 )}
@@ -86,15 +84,12 @@ export function Navbar() {
             ))}
           </div>
 
-          <Separator
-            orientation="vertical"
-            className="h-6 bg-white/10"
-          />
+          <Separator orientation="vertical" className="h-6 bg-white/10" />
 
           <div className="flex shrink-0 items-center gap-3">
             {session?.user ? (
               <>
-                <span className="text-white max-w-[120px] truncate text-sm text-[#ededef] xl:max-w-[160px]">
+                <span className="max-w-[120px] truncate text-sm text-[#ededef] text-white xl:max-w-[160px]">
                   {session.user.name}
                 </span>
 
@@ -111,7 +106,7 @@ export function Navbar() {
                 <Button
                   nativeButton={false}
                   render={<Link href="/sign-in" />}
-                  className="h-9 whitespace-nowrap rounded-lg bg-white px-3 text-sm text-[#645bff] hover:bg-white/90"
+                  className="h-9 rounded-lg bg-white px-3 text-sm whitespace-nowrap text-[#645bff] hover:bg-white/90"
                 >
                   Sign In
                 </Button>
@@ -119,7 +114,7 @@ export function Navbar() {
                 <Button
                   nativeButton={false}
                   render={<Link href="/sign-up" />}
-                  className="h-9 whitespace-nowrap rounded-lg bg-[#5c53fe] px-3 text-sm text-[#ededef] hover:bg-[#5c53fe]/90 xl:px-5"
+                  className="h-9 rounded-lg bg-[#5c53fe] px-3 text-sm whitespace-nowrap text-[#ededef] hover:bg-[#5c53fe]/90 xl:px-5"
                 >
                   Get Started
                 </Button>
@@ -149,9 +144,7 @@ export function Navbar() {
               className="w-[85vw] max-w-[360px] border-white/7 bg-[#141418] text-[#ededef]"
             >
               <SheetHeader>
-                <SheetTitle className="text-[#ededef]">
-                  Menu
-                </SheetTitle>
+                <SheetTitle className="text-[#ededef]">Menu</SheetTitle>
               </SheetHeader>
 
               <nav className="flex flex-col gap-2 px-4">
@@ -161,8 +154,7 @@ export function Navbar() {
                     href={link.href}
                     className={cn(
                       "rounded-lg px-3 py-3 text-base text-[#ededef] transition-colors hover:bg-white/5",
-                      link.active(pathname) &&
-                        "bg-white/5 font-bold"
+                      link.active(pathname) && "bg-white/5 font-bold"
                     )}
                   >
                     {link.label}

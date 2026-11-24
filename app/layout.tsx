@@ -6,6 +6,10 @@ import { Navbar } from "@/components/home/navbar"
 import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/sonner"
 
+export const metadata = {
+  viewport: "width=device-width, initial-scale=1.0",
+}
+
 
 const geist = Geist({subsets:['latin'],variable:'--font-sans'})
 

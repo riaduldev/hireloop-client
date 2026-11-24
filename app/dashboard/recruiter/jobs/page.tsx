@@ -24,7 +24,6 @@ interface JobTableRow {
   description: string
   location: string
   jobType: string
-  category: string
   createdAt: string
 }
 
