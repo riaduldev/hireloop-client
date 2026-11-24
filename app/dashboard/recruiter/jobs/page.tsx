@@ -1,406 +1,363 @@
+"use client";
 
-"use client"
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Pencil, Trash2, BriefcaseBusiness } from "lucide-react";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import {
-  BriefcaseBusiness,
-  CalendarDays,
-  MapPin,
-  Search,
-  Plus,
-  Trash2,
-  Pencil,
-  FileText,
-  X,
-} from "lucide-react"
+import { Button } from "@/components/ui/button";
+import { getJobs, deleteJob } from "@/lib/api/jobs";
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-
-interface JobTableRow {
-  id: number
-  title: string
-  description: string
-  location: string
-  jobType: string
-  createdAt: string
-}
-
-const initialJobs: JobTableRow[] = [
-  {
-    id: 1,
-    title: "Senior React Developer",
-    description:
-      "We are looking for an experienced React developer to join our team.",
-    location: "New York, NY",
-    jobType: "full-time",
-    category: "technology",
-    createdAt: "2024-01-15",
-  },
-  {
-    id: 2,
-    title: "UI/UX Designer",
-    description:
-      "Design intuitive interfaces and improve user experience.",
-    location: "Remote",
-    jobType: "full-time",
-    category: "design",
-    createdAt: "2024-01-20",
-  },
-  {
-    id: 3,
-    title: "Node.js Developer",
-    description:
-      "Backend development using Node.js, Express, and MongoDB.",
-    location: "San Francisco, CA",
-    jobType: "contract",
-    category: "technology",
-    createdAt: "2024-02-01",
-  },
-  {
-    id: 4,
-    title: "Marketing Specialist",
-    description:
-      "Create and execute marketing campaigns across digital channels.",
-    location: "Chicago, IL",
-    jobType: "part-time",
-    category: "marketing",
-    createdAt: "2024-02-10",
-  },
-  {
-    id: 5,
-    title: "Data Scientist",
-    description:
-      "Analyze complex data sets and build predictive models.",
-    location: "Boston, MA",
-    jobType: "full-time",
-    category: "technology",
-    createdAt: "2024-03-05",
-  },
-]
+export type Job = {
+  _id?: string;
+  id?: string | number;
+  title: string;
+  companyName: string;
+  category: string;
+  jobType: string;
+  remoteAllowed: boolean;
+  location: string;
+  deadline: string | null;
+  salary: {
+    min: number | null;
+    max: number | null;
+    frequency: string;
+  };
+  createdAt?: string;
+};
 
 export default function JobsPage() {
-  const router = useRouter()
+  const router = useRouter();
 
-  const [jobs, setJobs] = useState<JobTableRow[]>(initialJobs)
-  const [searchTerm, setSearchTerm] = useState("")
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  // Search jobs
-  const filteredJobs = jobs.filter((job) => {
-    const search = searchTerm.trim().toLowerCase()
+  // Fetch all jobs
+  useEffect(() => {
+    const fetchJobs = async () => {
+      try {
+        setLoading(true);
+        setError("");
 
-    return (
-      job.title.toLowerCase().includes(search) ||
-      job.location.toLowerCase().includes(search) ||
-      job.category.toLowerCase().includes(search) ||
-      job.jobType.toLowerCase().includes(search)
-    )
-  })
+        const result = await getJobs();
+
+        // Handle different API response formats
+        if (Array.isArray(result)) {
+          setJobs(result);
+        } else if (Array.isArray(result.data)) {
+          setJobs(result.data);
+        } else if (Array.isArray(result.jobs)) {
+          setJobs(result.jobs);
+        } else {
+          setJobs([]);
+        }
+      } catch (error) {
+        console.error("Failed to fetch jobs:", error);
+        setError("Failed to load jobs. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchJobs();
+  }, []);
 
   // Delete job
-  const handleDelete = (id: number) => {
-    setJobs((prevJobs) =>
-      prevJobs.filter((job) => job.id !== id)
-    )
-  }
+  const handleDelete = async (id: string) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this job?"
+    );
+
+    if (!confirmDelete) return;
+
+    try {
+      setDeletingId(id);
+
+      await deleteJob(id);
+
+      // Remove deleted job from UI
+      setJobs((prevJobs) =>
+        prevJobs.filter((job) => String(job._id ?? job.id) !== id)
+      );
+    } catch (error) {
+      console.error("Delete job error:", error);
+
+      alert(
+        error instanceof Error
+          ? error.message
+          : "Failed to delete job."
+      );
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
+  // Format salary
+  const formatSalary = (salary: Job["salary"]) => {
+    if (!salary) return "Not specified";
+
+    const { min, max, frequency } = salary;
+
+    if (min && max) {
+      return `$${min.toLocaleString()} - $${max.toLocaleString()}`;
+    }
+
+    if (min) {
+      return `$${min.toLocaleString()}+`;
+    }
+
+    if (max) {
+      return `Up to $${max.toLocaleString()}`;
+    }
+
+    return "Negotiable";
+  };
 
   // Format date
-  const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString("en-US", {
+  const formatDate = (date?: string) => {
+    if (!date) return "N/A";
+
+    const formattedDate = new Date(date);
+
+    if (isNaN(formattedDate.getTime())) return "N/A";
+
+    return formattedDate.toLocaleDateString("en-GB", {
+      day: "2-digit",
       month: "short",
-      day: "numeric",
       year: "numeric",
-    })
-  }
+    });
+  };
 
   return (
-    <section className="min-h-screen space-y-6 bg-[#0a0a0f] p-4 text-white sm:p-6 lg:p-8">
+    <section className="min-h-screen bg-[#0a0a0f] px-4 py-8 text-white sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-[1320px]">
 
-      {/* Header */}
-      <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <div className="mb-2 flex items-center gap-2 text-sm text-gray-400">
-            <BriefcaseBusiness className="size-4" />
-            <span>Recruiter Dashboard</span>
-            <span className="text-gray-600">/</span>
-            <span className="font-medium text-[#938dff]">Jobs</span>
-          </div>
-
-          <h1 className="font-[family-name:var(--font-manrope)] text-2xl font-bold tracking-tight text-white sm:text-3xl">
-            Manage Job Posts
-          </h1>
-
-          <p className="mt-2 text-sm text-gray-400">
-            Manage, track and organize all your job listings.
-          </p>
-        </div>
-
-        <Button
-          onClick={() =>
-            router.push("/dashboard/recruiter/jobs/new")
-          }
-          className="h-11 w-full border-0 bg-[#5c53fe] px-5 text-white hover:bg-[#4b42e8] sm:w-auto"
-        >
-          <Plus className="mr-2 size-4" />
-          Post New Job
-        </Button>
-      </div>
-
-      {/* Stats */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-
-        {/* Total Jobs */}
-        <div className="rounded-xl border border-white/10 bg-[#141418] p-5 transition-colors hover:border-[#5c53fe]/30">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-400">
-                Total Job Posts
-              </p>
-              <h2 className="mt-2 text-3xl font-bold text-white">
-                {jobs.length}
-              </h2>
-            </div>
-
-            <div className="rounded-xl bg-[#5c53fe]/15 p-3 text-[#938dff]">
-              <BriefcaseBusiness className="size-6" />
-            </div>
-          </div>
-        </div>
-
-        {/* Search Results */}
-        <div className="rounded-xl border border-white/10 bg-[#141418] p-5 transition-colors hover:border-emerald-500/30">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-400">
-                Search Results
-              </p>
-              <h2 className="mt-2 text-3xl font-bold text-white">
-                {filteredJobs.length}
-              </h2>
-            </div>
-
-            <div className="rounded-xl bg-emerald-500/10 p-3 text-emerald-400">
-              <FileText className="size-6" />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Jobs Table Container */}
-      <div className="overflow-hidden rounded-xl border border-white/10 bg-[#141418] shadow-lg shadow-black/10">
-
-        {/* Table Header */}
-        <div className="flex flex-col gap-4 border-b border-white/10 bg-[#141418] p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
-
+        {/* Header */}
+        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-white">
-              All Job Listings
-            </h2>
-            <p className="mt-1 text-xs text-gray-400">
-              View and manage your published opportunities.
+            <h1 className="text-2xl font-bold sm:text-3xl">
+              Manage Jobs
+            </h1>
+
+            <p className="mt-2 text-sm text-gray-400">
+              Manage and track all your posted jobs.
             </p>
           </div>
 
-          {/* Search */}
-          <div className="relative w-full sm:max-w-xs">
-            <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-gray-500" />
-
-            <Input
-              placeholder="Search jobs..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              autoComplete="off"
-              className="h-11 border border-white/10 bg-[#0a0a0f] pl-10 pr-10 text-white placeholder:text-gray-500 focus-visible:border-[#5c53fe] focus-visible:ring-[#5c53fe]/30"
-            />
-
-            {searchTerm && (
-              <button
-                type="button"
-                onClick={() => setSearchTerm("")}
-                aria-label="Clear search"
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 transition-colors hover:text-white"
-              >
-                <X className="size-4" />
-              </button>
-            )}
-          </div>
+          <Button
+            onClick={() =>
+              router.push("/dashboard/recruiter/jobs/new")
+            }
+            className="bg-[#5c53fe] text-white hover:bg-[#4b42e8]"
+          >
+            <BriefcaseBusiness className="mr-2 h-4 w-4" />
+            Post a Job
+          </Button>
         </div>
 
-        {/* Table */}
-        {filteredJobs.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[850px] text-left">
+        {/* Table Container */}
+        <div className="overflow-hidden rounded-xl border border-white/10 bg-[#141418]">
 
-              <thead>
-                <tr className="border-b border-white/10 bg-[#1b1b22] text-xs uppercase tracking-wider text-gray-400">
-                  <th className="px-6 py-4 font-medium">
-                    Job Title
-                  </th>
-                  <th className="px-6 py-4 font-medium">
-                    Location
-                  </th>
-                  <th className="px-6 py-4 font-medium">
-                    Job Type
-                  </th>
-                  <th className="px-6 py-4 font-medium">
-                    Category
-                  </th>
-                  <th className="px-6 py-4 font-medium">
-                    Posted Date
-                  </th>
-                  <th className="px-6 py-4 text-right font-medium">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {filteredJobs.map((job) => (
-                  <tr
-                    key={job.id}
-                    className="border-b border-white/5 bg-[#141418] text-white transition-colors hover:bg-[#1c1c26] last:border-0"
-                  >
-                    {/* Job Title */}
-                    <td className="px-6 py-5">
-                      <div className="flex items-center gap-3">
-                        <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-[#5c53fe]/10 text-[#938dff]">
-                          <BriefcaseBusiness className="size-5" />
-                        </div>
-
-                        <div className="max-w-[220px]">
-                          <p className="truncate text-sm font-semibold text-white">
-                            {job.title}
-                          </p>
-                          <p className="mt-1 truncate text-xs text-gray-400">
-                            {job.description}
-                          </p>
-                        </div>
-                      </div>
-                    </td>
-
-                    {/* Location */}
-                    <td className="px-6 py-5">
-                      <div className="flex items-center gap-2 text-sm text-gray-300">
-                        <MapPin className="size-4 shrink-0 text-gray-500" />
-                        {job.location}
-                      </div>
-                    </td>
-
-                    {/* Job Type */}
-                    <td className="px-6 py-5">
-                      <span className="inline-flex rounded-full border border-[#5c53fe]/20 bg-[#5c53fe]/10 px-3 py-1 text-xs font-medium capitalize text-[#a5a0ff]">
-                        {job.jobType.replace("-", " ")}
-                      </span>
-                    </td>
-
-                    {/* Category */}
-                    <td className="px-6 py-5">
-                      <span className="text-sm capitalize text-gray-300">
-                        {job.category}
-                      </span>
-                    </td>
-
-                    {/* Posted Date */}
-                    <td className="px-6 py-5">
-                      <div className="flex items-center gap-2 whitespace-nowrap text-sm text-gray-400">
-                        <CalendarDays className="size-4 text-gray-500" />
-                        {formatDate(job.createdAt)}
-                      </div>
-                    </td>
-
-                    {/* Actions */}
-                    <td className="px-6 py-5">
-                      <div className="flex items-center justify-end gap-2">
-
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          aria-label={`Edit ${job.title}`}
-                          onClick={() =>
-                            router.push(
-                              `/dashboard/recruiter/jobs/edit/${job.id}`
-                            )
-                          }
-                          className="size-9 text-gray-400 hover:bg-[#5c53fe]/10 hover:text-[#a5a0ff]"
-                        >
-                          <Pencil className="size-4" />
-                        </Button>
-
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          aria-label={`Delete ${job.title}`}
-                          onClick={() => handleDelete(job.id)}
-                          className="size-9 text-gray-400 hover:bg-red-500/10 hover:text-red-400"
-                        >
-                          <Trash2 className="size-4" />
-                        </Button>
-
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-
-          /* Empty State */
-          <div className="flex flex-col items-center justify-center bg-[#141418] px-5 py-16 text-center">
-
-            <div className="mb-5 flex size-16 items-center justify-center rounded-2xl border border-white/10 bg-[#1b1b22]">
-              {searchTerm ? (
-                <Search className="size-7 text-gray-400" />
-              ) : (
-                <BriefcaseBusiness className="size-7 text-gray-400" />
-              )}
+          {/* Loading */}
+          {loading && (
+            <div className="flex min-h-[300px] items-center justify-center">
+              <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#5c53fe] border-t-transparent" />
             </div>
+          )}
 
-            <h3 className="text-lg font-semibold text-white">
-              {searchTerm
-                ? "No matching jobs found"
-                : "No job posts yet"}
-            </h3>
+          {/* Error */}
+          {!loading && error && (
+            <div className="flex min-h-[300px] flex-col items-center justify-center px-4 text-center">
+              <p className="text-red-400">{error}</p>
 
-            <p className="mt-2 max-w-sm text-sm leading-6 text-gray-400">
-              {searchTerm
-                ? `We couldn't find any jobs matching "${searchTerm}". Try another keyword.`
-                : "You haven't posted any jobs yet. Create your first job listing to get started."}
-            </p>
-
-            {searchTerm ? (
               <Button
-                variant="outline"
-                onClick={() => setSearchTerm("")}
-                className="mt-5 border-white/10 bg-[#1b1b22] text-white hover:bg-[#252530] hover:text-white"
+                onClick={() => window.location.reload()}
+                className="mt-4 bg-[#5c53fe] hover:bg-[#4b42e8]"
               >
-                Clear Search
+                Try Again
               </Button>
-            ) : (
+            </div>
+          )}
+
+          {/* Empty State */}
+          {!loading && !error && jobs.length === 0 && (
+            <div className="flex min-h-[300px] flex-col items-center justify-center px-4 text-center">
+              <BriefcaseBusiness className="mb-4 h-12 w-12 text-gray-500" />
+
+              <h3 className="text-lg font-semibold">
+                No jobs found
+              </h3>
+
+              <p className="mt-2 text-sm text-gray-400">
+                You haven&apos;t posted any jobs yet.
+              </p>
+
               <Button
                 onClick={() =>
                   router.push("/dashboard/recruiter/jobs/new")
                 }
-                className="mt-5 bg-[#5c53fe] text-white hover:bg-[#4b42e8]"
+                className="mt-5 bg-[#5c53fe] hover:bg-[#4b42e8]"
               >
-                <Plus className="mr-2 size-4" />
                 Post Your First Job
               </Button>
-            )}
+            </div>
+          )}
 
+          {/* Jobs Table */}
+          {!loading && !error && jobs.length > 0 && (
+            <div className="w-full overflow-x-auto">
+              <table className="w-full min-w-[1150px] text-left">
+
+                {/* Table Header */}
+                <thead className="bg-[#1b1b22]">
+                  <tr className="border-b border-white/10">
+                    <th className="px-6 py-5 text-xs font-semibold uppercase tracking-wider text-gray-400">
+                      Job Title
+                    </th>
+
+                    <th className="px-6 py-5 text-xs font-semibold uppercase tracking-wider text-gray-400">
+                      Category
+                    </th>
+
+                    <th className="px-6 py-5 text-xs font-semibold uppercase tracking-wider text-gray-400">
+                      Job Type
+                    </th>
+
+                    <th className="px-6 py-5 text-xs font-semibold uppercase tracking-wider text-gray-400">
+                      Location
+                    </th>
+
+                    <th className="px-6 py-5 text-xs font-semibold uppercase tracking-wider text-gray-400">
+                      Salary
+                    </th>
+
+                    <th className="px-6 py-5 text-xs font-semibold uppercase tracking-wider text-gray-400">
+                      Posted Date
+                    </th>
+
+                    <th className="px-6 py-5 text-center text-xs font-semibold uppercase tracking-wider text-gray-400">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+
+                {/* Table Body */}
+                <tbody>
+                  {jobs.map((job) => {
+                    const jobId = String(job._id ?? job.id);
+
+                    return (
+                      <tr
+                        key={jobId}
+                        className="border-b border-white/10 transition-colors hover:bg-[#1c1c26]"
+                      >
+                        {/* Job Title */}
+                        <td className="px-6 py-5">
+                          <div>
+                            <p className="whitespace-nowrap font-medium text-white">
+                              {job.title}
+                            </p>
+
+                            <p className="mt-1 text-sm text-gray-400">
+                              {job.companyName}
+                            </p>
+                          </div>
+                        </td>
+
+                        {/* Category */}
+                        <td className="px-6 py-5">
+                          <span className="whitespace-nowrap text-sm text-gray-300">
+                            {job.category}
+                          </span>
+                        </td>
+
+                        {/* Job Type */}
+                        <td className="px-6 py-5">
+                          <span className="inline-flex whitespace-nowrap rounded-full border border-[#5c53fe]/20 bg-[#5c53fe]/10 px-3 py-1 text-xs font-medium capitalize text-[#a5a0ff]">
+                            {job.jobType?.replaceAll("-", " ")}
+                          </span>
+                        </td>
+
+                        {/* Location */}
+                        <td className="px-6 py-5">
+                          <span className="whitespace-nowrap text-sm text-gray-300">
+                            {job.remoteAllowed
+                              ? "Remote"
+                              : job.location}
+                          </span>
+                        </td>
+
+                        {/* Salary */}
+                        <td className="px-6 py-5">
+                          <span className="whitespace-nowrap text-sm text-gray-300">
+                            {formatSalary(job.salary)}
+                          </span>
+                        </td>
+
+                        {/* Posted Date */}
+                        <td className="px-6 py-5">
+                          <span className="whitespace-nowrap text-sm text-gray-400">
+                            {formatDate(job.createdAt)}
+                          </span>
+                        </td>
+
+                        {/* Actions */}
+                        <td className="px-6 py-5">
+                          <div className="flex items-center justify-center gap-2">
+
+                            {/* Edit Button */}
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() =>
+                                router.push(
+                                  `/dashboard/recruiter/jobs/edit/${jobId}`
+                                )
+                              }
+                              className="border-white/10 bg-transparent text-gray-300 hover:bg-[#5c53fe]/10 hover:text-white"
+                            >
+                              <Pencil className="mr-1 h-4 w-4" />
+                              Edit
+                            </Button>
+
+                            {/* Delete Button */}
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              disabled={deletingId === jobId}
+                              onClick={() => handleDelete(jobId)}
+                              className="border-red-500/20 bg-transparent text-red-400 hover:bg-red-500/10 hover:text-red-300"
+                            >
+                              {deletingId === jobId ? (
+                                <span className="mr-1 h-4 w-4 animate-spin rounded-full border-2 border-red-400 border-t-transparent" />
+                              ) : (
+                                <Trash2 className="mr-1 h-4 w-4" />
+                              )}
+
+                              {deletingId === jobId
+                                ? "Deleting..."
+                                : "Delete"}
+                            </Button>
+
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
+        {/* Table Footer */}
+        {!loading && !error && jobs.length > 0 && (
+          <div className="mt-4 text-sm text-gray-500">
+            Showing {jobs.length} jobs
           </div>
         )}
       </div>
-
-      {/* Footer */}
-      <div className="flex flex-col items-center justify-between gap-2 text-xs text-gray-500 sm:flex-row">
-        <p>
-          Showing {filteredJobs.length} of {jobs.length} jobs
-        </p>
-        <p>Manage your opportunities with HireLoop</p>
-      </div>
-
     </section>
-  )
+  );
 }
