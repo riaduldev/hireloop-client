@@ -91,7 +91,7 @@ const recruiterMenu: MenuItem[] = [
     icon: BriefcaseBusiness,
   },
   {
-    name: "Post a Job",
+    name: "Add Job",
     url: "/dashboard/recruiter/jobs/new",
     icon: UserPlus,
   },
