@@ -13,6 +13,24 @@ import {
 } from "@/components/ui/select"
 import { ChevronLeft, MapPin, Building2, CalendarIcon } from "lucide-react"
 import { toast } from "sonner"
+import { createJob } from "@/lib/actions/jobs"
+
+export type JobFormData = {
+  title: string
+  companyName: string
+  category: string
+  jobType: string
+  remoteAllowed: boolean
+  location: string
+  deadline: string | null
+  salary: {
+    min: number | null
+    max: number | null
+    frequency: string
+  }
+  responsibilities: string
+  qualifications: string
+}
 
 function getTodayDate() {
   const date = new Date()
@@ -51,7 +69,7 @@ export default function NewJobPage() {
   const [errorMsg, setErrorMsg] = useState("")
   const [loading, setLoading] = useState(false)
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+ async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
   e.preventDefault()
 
   if (!title.trim()) {
@@ -106,7 +124,7 @@ export default function NewJobPage() {
     return
   }
 
-  const jobData = {
+const jobData:JobFormData = {
     title: title.trim(),
     companyName: companyName.trim(),
     category,
@@ -122,6 +140,7 @@ export default function NewJobPage() {
     responsibilities: responsibilities.trim(),
     qualifications: qualifications.trim(),
   }
+
 
   try {
     setLoading(true)
@@ -139,7 +158,9 @@ export default function NewJobPage() {
   } finally {
     setLoading(false)
   }
-  console.log(jobData);
+  
+  const result =await createJob(jobData)
+  console.log(result);
 }
 
 
