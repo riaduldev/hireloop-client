@@ -2,30 +2,14 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { Pencil, Trash2, BriefcaseBusiness } from "lucide-react"
+import { Pencil, Trash2, BriefcaseBusiness, Eye } from "lucide-react"
 
+import JobDetailsDialog from "@/app/components/JobDetailsDialog"
 import { Button } from "@/components/ui/button"
 import { getJobs, deleteJob } from "@/lib/api/jobs"
 import DeleteJobDialog from "@/app/components/DeleteJobDialog"
 import { toast } from "sonner"
-
-export type Job = {
-  _id?: string
-  id?: string | number
-  title: string
-  companyName: string
-  category: string
-  jobType: string
-  remoteAllowed: boolean
-  location: string
-  deadline: string | null
-  salary: {
-    min: number | null
-    max: number | null
-    frequency: string
-  }
-  createdAt?: string
-}
+import { Job } from "@/types/jobs"
 
 export default function JobsPage() {
   const router = useRouter()
@@ -34,6 +18,9 @@ export default function JobsPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
   const [deletingId, setDeletingId] = useState<string | null>(null)
+
+  const [selectedJobId, setSelectedJobId] = useState("")
+  const [viewOpen, setViewOpen] = useState(false)
 
   // Fetch all jobs
   useEffect(() => {
@@ -67,34 +54,30 @@ export default function JobsPage() {
 
   // Delete job
   const handleDelete = async (id: string): Promise<boolean> => {
-  try {
-    setDeletingId(id);
+    try {
+      setDeletingId(id)
 
-    await deleteJob(id);
+      await deleteJob(id)
 
-    setJobs((prevJobs) =>
-      prevJobs.filter(
-        (job) => String(job._id ?? job.id) !== id
+      setJobs((prevJobs) =>
+        prevJobs.filter((job) => String(job._id ?? job.id) !== id)
       )
-    );
 
-    toast.success("Job deleted successfully!");
+      toast.success("Job deleted successfully!")
 
-    return true;
-  } catch (error) {
-    console.error("Delete job error:", error);
+      return true
+    } catch (error) {
+      console.error("Delete job error:", error)
 
-    toast.error(
-      error instanceof Error
-        ? error.message
-        : "Failed to delete job!"
-    );
+      toast.error(
+        error instanceof Error ? error.message : "Failed to delete job!"
+      )
 
-    return false;
-  } finally {
-    setDeletingId(null);
+      return false
+    } finally {
+      setDeletingId(null)
+    }
   }
-};
 
   // Format salary
   const formatSalary = (salary: Job["salary"]) => {
@@ -295,6 +278,19 @@ export default function JobsPage() {
                         {/* Actions */}
                         <td className="px-6 py-5">
                           <div className="flex items-center justify-center gap-2">
+                            {/* View Button */}
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => {
+                                console.log("Clicked job ID:", jobId)
+                                setSelectedJobId(jobId)
+                                setViewOpen(true)
+                              }}
+                              className="border-white/10 bg-transparent text-gray-300 hover:bg-[#5c53fe]/10 hover:text-white"
+                            >
+                              <Eye className="mr-1 h-4 w-4" />
+                            </Button>
                             {/* Edit Button */}
                             <Button
                               size="sm"
@@ -332,7 +328,15 @@ export default function JobsPage() {
             Showing {jobs.length} jobs
           </div>
         )}
-      </div>
+     </div>
+      {/* Job Details Dialog */}
+    {selectedJobId && (
+      <JobDetailsDialog
+        jobId={selectedJobId}
+        open={viewOpen}
+        onOpenChange={setViewOpen}
+      />
+    )}
     </section>
   )
 }
