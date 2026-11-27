@@ -1,4 +1,3 @@
-
 "use client"
 
 import Link from "next/link"
@@ -30,6 +29,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar"
 
 import { useSession } from "@/lib/auth-client"
@@ -97,7 +97,7 @@ const recruiterMenu: MenuItem[] = [
   },
   {
     name: "View Applicants",
-    url: "/dashboard/recruiter/jobs",
+    url: "/dashboard/recruiter/applicants",
     icon: Users,
   },
   {
@@ -171,7 +171,7 @@ export function DashboardSidebar({
   role?: DashboardRole
 }) {
   const pathname = usePathname()
-
+  const { setOpenMobile } = useSidebar()
   const { data: session, isPending } = useSession()
 
   // Get role from props or session
@@ -188,11 +188,9 @@ export function DashboardSidebar({
   // Loading state
   if (isPending && !role) {
     return (
-      <Sidebar>
+      <Sidebar collapsible="icon">
         <SidebarHeader className="border-b p-4">
-          <h2 className="text-xl font-bold">
-            HireLoop
-          </h2>
+          <h2 className="text-xl font-bold">HireLoop</h2>
         </SidebarHeader>
 
         <SidebarContent>
@@ -209,11 +207,9 @@ export function DashboardSidebar({
   // Role not assigned
   if (!currentRole) {
     return (
-      <Sidebar>
+      <Sidebar collapsible="icon">
         <SidebarHeader className="border-b p-4">
-          <h2 className="text-xl font-bold">
-            HireLoop
-          </h2>
+          <h2 className="text-xl font-bold">HireLoop</h2>
         </SidebarHeader>
 
         <SidebarContent>
@@ -228,27 +224,37 @@ export function DashboardSidebar({
   }
 
   const menuItems = menuByRole[currentRole]
-
   const dashboardUrl = `/dashboard/${currentRole}`
 
+  // Find the single most specific matching route (prevents /jobs and /jobs/new both highlighting)
+  const activeUrl =
+    menuItems
+      .filter(
+        (item) =>
+          pathname === item.url ||
+          (item.url !== dashboardUrl && pathname.startsWith(`${item.url}/`))
+      )
+      .sort((a, b) => b.url.length - a.url.length)[0]?.url ?? ""
+
   return (
-    <Sidebar>
+    <Sidebar collapsible="icon">
       {/* Sidebar Header */}
       <SidebarHeader className="border-b p-4">
         <Link
           href={dashboardUrl}
-          className="flex items-center gap-2"
+          onClick={() => setOpenMobile(false)}
+          className="flex items-center gap-2.5"
         >
-          <div className="flex size-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+          <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-emerald-600 text-white">
             <BriefcaseBusiness className="size-5" />
           </div>
 
-          <div>
-            <h2 className="text-xl font-bold tracking-tight">
+          <div className="min-w-0">
+            <h2 className="truncate text-xl font-bold tracking-tight">
               HireLoop
             </h2>
 
-            <p className="text-xs text-muted-foreground">
+            <p className="truncate text-xs text-muted-foreground">
               {roleLabels[currentRole]}
             </p>
           </div>
@@ -258,29 +264,27 @@ export function DashboardSidebar({
       {/* Sidebar Menu */}
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>
-            Workspace
-          </SidebarGroupLabel>
+          <SidebarGroupLabel>Workspace</SidebarGroupLabel>
 
           <SidebarMenu>
             {menuItems.map((item) => {
-              const isActive =
-                pathname === item.url ||
-                (item.url !== dashboardUrl &&
-                  pathname.startsWith(`${item.url}/`))
-
+              const isActive = item.url === activeUrl
               const Icon = item.icon
 
               return (
                 <SidebarMenuItem key={item.name}>
                   <SidebarMenuButton
-                    render={<Link href={item.url} />}
+                    render={
+                      <Link
+                        href={item.url}
+                        onClick={() => setOpenMobile(false)}
+                      />
+                    }
                     isActive={isActive}
                     tooltip={item.name}
-                    className="transition-colors"
+                    className="transition-colors data-[active=true]:bg-emerald-500/15 data-[active=true]:font-semibold data-[active=true]:text-emerald-600 dark:data-[active=true]:text-emerald-400"
                   >
-                    <Icon className="size-4" />
-
+                    <Icon className="size-4 shrink-0" />
                     <span>{item.name}</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -293,14 +297,14 @@ export function DashboardSidebar({
       {/* Sidebar Footer */}
       <SidebarFooter className="border-t p-3">
         <div className="flex items-center gap-2 rounded-lg bg-muted/50 p-3">
-          <ShieldCheck className="size-4 text-muted-foreground" />
+          <ShieldCheck className="size-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
 
           <div className="min-w-0">
-            <p className="text-sm font-medium">
+            <p className="truncate text-sm font-medium">
               {roleLabels[currentRole]}
             </p>
 
-            <p className="text-xs text-muted-foreground">
+            <p className="truncate text-xs text-muted-foreground">
               HireLoop Workspace
             </p>
           </div>

@@ -68,7 +68,7 @@ const features = [
 export default function FeaturesSection() {
   return (
     <section className="w-full bg-[#151515] px-4 py-20 text-white sm:px-6 lg:px-10 lg:py-24">
-      <div className="mx-auto max-w-[1320px]">
+      <div className="mx-auto w-full">
         {/* Section heading */}
         <div className="mx-auto mb-16 max-w-xl text-center">
           <div className="mb-5 flex items-center justify-center gap-4">

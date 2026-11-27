@@ -116,7 +116,7 @@ function JobCard({ job }: { job: (typeof jobs)[number] }) {
 export default function SmartJobDiscovery() {
   return (
     <section className="w-full bg-[#101010] px-4 py-16 text-white sm:px-6 lg:px-10 lg:py-24">
-      <div className="mx-auto max-w-[1320px]">
+      <div className="mx-auto w-full">
         {/* Heading */}
         <div className="mb-12 text-center sm:mb-16">
           <div className="mb-5 flex items-center justify-center gap-4">

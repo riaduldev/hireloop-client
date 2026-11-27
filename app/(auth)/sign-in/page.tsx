@@ -61,7 +61,7 @@ export default function SignInPage() {
   }
 
   return (
-    <main className="flex min-h-[calc(100vh-80px)] items-center justify-center bg-[#05050a] px-4 py-16">
+    <main className="flex min-h-screen items-center justify-center bg-[#05050a] px-4 py-16">
       <div className="w-full max-w-md rounded-2xl border border-white/10 bg-[#141418] p-8 shadow-xl">
         <div className="mb-8 text-center">
           <h1 className="font-[family-name:var(--font-manrope)] text-3xl font-bold text-white">

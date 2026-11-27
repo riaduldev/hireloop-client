@@ -74,7 +74,7 @@ export default function PricingSection() {
       id="pricing"
       className="w-full bg-[#050505] px-4 py-16 text-white sm:px-6 sm:py-20 lg:px-10 lg:py-24"
     >
-      <div className="mx-auto max-w-[1200px]">
+      <div className="mx-auto w-full">
         {/* Section Heading */}
         <div className="mx-auto mb-12 max-w-2xl text-center sm:mb-16">
           <div className="mb-5 flex items-center justify-center gap-3">

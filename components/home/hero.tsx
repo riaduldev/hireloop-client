@@ -41,7 +41,7 @@ export function Hero() {
   ];
 
   return (
-    <section className="relative w-full overflow-visible bg-[#05050a]">
+    <section className="relative w-full overflow-hidden bg-[#05050a]">
 
       {/* Background Globe Image */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -59,7 +59,7 @@ export function Hero() {
       <div className="pointer-events-none absolute inset-0 bg-[#05050a]/30" />
 
       {/* Hero Content */}
-      <div className="relative z-10 mx-auto flex min-h-[85svh] w-full max-w-[1320px] flex-col items-center justify-center px-4 py-24 text-center sm:px-6 sm:py-28 lg:px-10">
+      <div className="relative z-10 mx-auto w-full flex flex-col items-center justify-center px-4 py-24 text-center sm:px-6 sm:py-28 lg:px-10">
 
         {/* Top Badge */}
         <div className="mb-5 flex items-center justify-center gap-2 sm:mb-7 sm:gap-3">
@@ -94,7 +94,7 @@ export function Hero() {
         {/* Search Form */}
         <form
           onSubmit={handleSearch}
-          className="mt-7 flex w-full max-w-[740px] flex-col gap-2 rounded-2xl border border-white/15 bg-[#0f0f14]/90 p-2 shadow-2xl backdrop-blur-md sm:mt-10 sm:flex-row sm:items-center"
+          className="mt-7 flex w-full flex-col gap-2 rounded-2xl border border-white/15 bg-[#0f0f14]/90 p-2 shadow-2xl backdrop-blur-md sm:mt-10 sm:flex-row sm:items-center"
         >
           {/* Keyword */}
           <div className="flex min-w-0 flex-1 items-center gap-2.5 px-3 py-2 sm:py-0">
@@ -160,7 +160,7 @@ export function Hero() {
       </div>
 
       {/* Job Stats */}
-      <div className="relative z-20 mx-auto -mt-10 w-full max-w-[1320px] px-4 pb-8 sm:-mt-14 sm:px-6 lg:px-10">
+      <div className="relative z-20 mx-auto -mt-10 w-full px-4 pb-8 sm:-mt-14 sm:px-6 lg:px-10">
         <JobStats />
       </div>
 

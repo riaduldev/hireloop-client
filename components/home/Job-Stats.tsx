@@ -32,7 +32,7 @@ const stats = [
 export default function JobStats() {
   return (
     <section className="w-full px-0 py-6 text-white sm:px-8 sm:py-8">
-      <div className="mx-auto w-full max-w-[1320px]">
+      <div className="mx-auto w-full px-4">
 
         {/* Section title */}
         <div className="mx-auto mb-8 max-w-2xl text-center sm:mb-10">
@@ -44,7 +44,7 @@ export default function JobStats() {
         </div>
 
         {/* Statistics cards */}
-        <div className="mx-auto grid w-full max-w-[1100px] grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="mx-auto w-full grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
 
           {stats.map((stat) => {
             const Icon = stat.icon;
